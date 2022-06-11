@@ -18,7 +18,12 @@ type Mail struct {
 	Body    string
 }
 
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 func uploadFile(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	fmt.Fprintf(w, "Uploading files\n")
 
 	//1. parse input, type.multipart/form-data
@@ -64,19 +69,22 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 
 	// fmt.print(file)
 	request := Mail{
-		Sender:  "",
+		Sender:  "abdalla.j.alsari@gmail.com",
 		To:      to,
 		Subject: subject,
 		Body:    body,
 	}
-	log.Println("request payload\n")
-	log.Println(request)
+
 	//send EMail
 
 	email := sendEmail(request, tempFile.Name())
 
-	//4. return whether  or not this has been successfully uploaded
+	// if email == "" {
+	// 	w.WriteHeader(http.StatusServiceUnavailable)
+	// }
 
+	//4. return whether  or not this has been successfully uploaded
+	// w.WriteHeader(http.StatusCreated)
 	fmt.Fprintf(w, email)
 }
 
@@ -138,7 +146,7 @@ func readFile(fileName string) []byte {
 
 func sendEmail(mail Mail, tempFile string) string {
 
-	user := ""
+	user := "abdalla.j.alsari@gmail.com"
 	password := ""
 
 	addr := "smtp.gmail.com:587"
